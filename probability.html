@@ -1,0 +1,208 @@
+<html>
+<head>
+</head>
+<body>
+<table id="gameBoard" style="width:700px;height:500px;background-color: Black;">
+<tbody valign="top">
+</tbody>
+</table>
+
+<script type="text/javascript">
+// Brought to you by Adel Salah :)
+var wholeColors = ['White','Red','Green','Blue','Yellow','Orange'];
+var rightColors = [];
+var trials = 12;
+var userChosenColors = [];
+var numberOfBalls = 5;
+initGame();
+
+function changeMyColor(e){
+var clickedIndex = e.id.split('_')[2];
+clickedIndex--;
+var x;
+var currentBallColor = userChosenColors[clickedIndex];
+if(currentBallColor == 'White'){
+	userChosenColors[clickedIndex] = 'Red';
+	x = 1;
+}
+else
+{
+	x = wholeColors.indexOf(currentBallColor)+1;
+	userChosenColors[clickedIndex] = wholeColors[x];
+}
+if(x==wholeColors.length){
+	userChosenColors[clickedIndex] = 'White';
+	x=0;
+}
+e.className = 'circleBase type'+x;
+return false;
+}
+
+function checkSpecialCase(rightIndecies,color){
+var result = false;
+for(cs=0;cs<rightColors.length;cs++){
+if(rightColors.indexOf(color) > 0 && rightIndecies.indexOf(cs) == -1){
+	result = true;
+	break;
+}
+
+}
+
+return result;
+
+}
+
+function checkAnswer(e){
+var answers='';
+var rightColoredBalls = 0;
+var coloredBalls = [];
+var rightIndecies = [];
+var notRightColoredBalls = 0;
+for(i=0;i<numberOfBalls;i++){
+if(rightColors[i]==userChosenColors[i]){
+rightColoredBalls++;
+rightIndecies.push(i);
+}
+/*else if(rightColors.indexOf(userChosenColors[i]) >= 0){
+if(coloredBalls.indexOf(userChosenColors[i])==-1 && checkSpecialCase(rightIndecies,userChosenColors[i]))
+	coloredBalls.push(userChosenColors[i]);
+}*/
+
+}
+for(i=0;i<numberOfBalls;i++){
+	/*if(rightColors.indexOf(userChosenColors[i]) >= 0){
+		if(coloredBalls.indexOf(userChosenColors[i])==-1 && checkSpecialCase(rightIndecies,userChosenColors[i]))
+		coloredBalls.push(userChosenColors[i]);
+	}*/
+	if(rightIndecies.indexOf(i)==-1)
+		if(rightColors.indexOf(userChosenColors[i]) >= 0)
+			notRightColoredBalls++;
+}
+answers = rightColoredBalls+' colored right position balls and '+notRightColoredBalls+' not right position colored balls';
+e.innerHTML= "<b style='color:Black'>"+answers+"</b>";
+if(rightColoredBalls == numberOfBalls){
+	alert('Congratulations!! you made it');
+	window.location.href = window.location.href;
+	return false;
+}
+
+e.disabled = true;
+var myId = parseInt(e.id);
+
+if(myId == trials){
+	alert('Game is over. you couldn not get the right answer. The right ball sequence is: '+ rightColors);
+	window.location.href = window.location.href;
+	return false;
+}
+else
+{
+	//alert(rightColors);
+	//alert(userChosenColors);
+	//e.parentNode.parentNode.style.display = 'none';
+	var allPrevBallsTDs = e.parentNode.parentNode.childNodes;
+	//alert(allPrevBalls);
+	for(j=0;j<allPrevBallsTDs.length;j++){
+		var prevBall = allPrevBallsTDs[j].childNodes[0];
+		prevBall.onclick='return false';
+	}
+	var passedId = 'trial_'+parseInt(myId+1);
+	document.getElementById(passedId).style='';
+}
+userChosenColors = [];
+for(index=0;index<wholeColors.length-1;index++){
+	userChosenColors.push('White');
+}
+//userChosenColors = [];
+return false;
+}
+
+function initGame(){
+var index = 0;
+var colorToBeAdded = 0;
+for(index=0;index<wholeColors.length-1;index++){
+	colorToBeAdded = Math.floor((Math.random() * 5) + 0);
+	rightColors.push(wholeColors[colorToBeAdded]);
+	userChosenColors.push('White');
+}
+
+document.getElementById('gameBoard').childNodes[1].innerHTML = '';
+var myHTML = '';
+
+for(index=0;index<trials;index++){
+//alert(document.getElementById('gameBoard').childNodes[1].childNodes[0])
+//document.getElementById('gameBoard').childNodes[1].innerHTML+="<tr>";
+if(index == 0)
+	myHTML+="<tr id='trial_"+(index+1)+"'>";
+else
+	myHTML+="<tr style='visibility:hidden;' id='trial_"+(index+1)+"'>";
+	
+//alert("step 1: "+document.getElementById('gameBoard').childNodes[1].innerHTML);
+var innerIndex = 0;
+for(innerIndex=0;innerIndex<numberOfBalls;innerIndex++){
+//document.getElementById('gameBoard').childNodes[1].innerHTML+="<td><div onclick='changeMyColor(this)' class='circleBase type0' id='div_"+(index+1)+"_"+(innerIndex+1)+"'/></td>";
+//alert("step 2: "+document.getElementById('gameBoard').childNodes[1].innerHTML);
+myHTML+="<td><div onclick='changeMyColor(this)' class='circleBase type0' id='div_"+(index+1)+"_"+(innerIndex+1)+"'/></td>";
+}
+//document.getElementById('gameBoard').childNodes[1].innerHTML+="</tr>";
+myHTML+="<td><button style='width:400px;' id='"+(index+1)+"' onclick='checkAnswer(this);'>Check Answer</button></td></tr>";
+//alert("step 2: "+document.getElementById('gameBoard').childNodes[1].innerHTML);
+//alert("step 3: "+document.getElementById('gameBoard').childNodes[1].innerHTML);
+//alert(document.getElementById('gameBoard').childNodes[1].childNodes[0].innerHTML);
+}
+
+document.getElementById('gameBoard').childNodes[1].innerHTML=myHTML;
+
+}
+</script>
+
+<style>
+.circleBase {
+    border-radius: 50%;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+}
+
+.type0 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: White;
+}
+
+.type1 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: Red;
+}
+
+.type2 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: Green;
+}
+
+.type3 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: Blue;
+}
+
+.type4 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: Yellow;
+}
+
+.type5 {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+	background-color: Orange;
+}
+
+</style>
+</body>
+</html>
